@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "522203515852",
+    "project_id": "react-commerce-1d374",
+    "storage_bucket": "react-commerce-1d374.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:522203515852:android:af74db2dd04b6cd3486b69",
+        "android_client_info": {
+          "package_name": "com.firmasmane.proficionalmente"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "522203515852-9hu4c3on4vcofdc2ka9e80p9t80mli98.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZCNz6a7nzKN-U0-sZ_jRxsgrtm_dybCA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "522203515852-9hu4c3on4vcofdc2ka9e80p9t80mli98.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
