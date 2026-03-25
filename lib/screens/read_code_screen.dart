@@ -70,7 +70,8 @@ class _UseCodePageState extends State<UseCodePage> {
       newDate = now.add(const Duration(days: 30));
     }
 
-    await prefs.setBool("isPremiun", true);
+    await prefs.setBool("isPremium", true);
+    await prefs.setBool("isPremium", true);
     await prefs.setString("premiumExpiresAt", newDate.toIso8601String());
   }
 
@@ -140,11 +141,41 @@ class _UseCodePageState extends State<UseCodePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Usar Código')),
+      appBar: AppBar(
+        title: const Text("Pagamento E-Mola"),
+        backgroundColor: Colors.green,
+        foregroundColor: Colors.white,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
+            const SizedBox(height: 20),
+
+            const Text(
+              "Plano Premium",
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+
+            const SizedBox(height: 10),
+
+            Container(
+              padding: const EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                color: Colors.green.shade50,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Text(
+                "247 MT / mês",
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green,
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 30),
             TextField(
               controller: controller,
               decoration: const InputDecoration(
@@ -160,16 +191,12 @@ class _UseCodePageState extends State<UseCodePage> {
                   : const Text('Verificar'),
             ),
             const SizedBox(height: 20),
-            Text(
-              result,
-              style: const TextStyle(fontSize: 18),
-            )
+            Text(result, style: const TextStyle(fontSize: 18)),
           ],
         ),
       ),
 
       // ================= CONTATOS =================
-
       bottomNavigationBar: Container(
         padding: const EdgeInsets.all(15),
         child: Column(

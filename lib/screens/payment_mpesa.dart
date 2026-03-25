@@ -48,11 +48,12 @@ class _MpesaPaymentPageState extends State<MpesaPaymentPage> {
       }
 
       await prefs.setBool("isPremium", true);
+      //await prefs.setBool("isPremium", true);
       await prefs.setString("premiumExpiresAt", newDate.toIso8601String());
 
-      print("Premium ativado até: $newDate");
+   //   print("Premium ativado até: $newDate");
     } catch (e) {
-      print("Erro ao ativar premium: $e");
+      throw ("Erro ao ativar premium: $e");
     }
   }
 
@@ -84,10 +85,7 @@ class _MpesaPaymentPageState extends State<MpesaPaymentPage> {
       final response = await http.post(
         Uri.parse(url),
         headers: {"Content-Type": "application/json"},
-        body: jsonEncode({
-          "phoneNumber": "258$phone",
-          "amount": 2,
-        }),
+        body: jsonEncode({"phoneNumber": "258$phone", "amount": 247}),
       );
 
       if (response.statusCode == 200) {
@@ -138,10 +136,7 @@ class _MpesaPaymentPageState extends State<MpesaPaymentPage> {
 
             const Text(
               "Plano Premium",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
 
             const SizedBox(height: 10),
@@ -153,7 +148,7 @@ class _MpesaPaymentPageState extends State<MpesaPaymentPage> {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Text(
-                "250 MT / mês",
+                "247 MT / mês",
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -192,10 +187,7 @@ class _MpesaPaymentPageState extends State<MpesaPaymentPage> {
                 ),
                 child: loading
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text(
-                        "Pagar",
-                        style: TextStyle(fontSize: 18),
-                      ),
+                    : const Text("Pagar", style: TextStyle(fontSize: 18)),
               ),
             ),
 

@@ -1,11 +1,9 @@
 import 'package:cartaz/screens/about_screen.dart';
-import 'package:cartaz/screens/creat_auto_codes.dart';
-//import 'package:cartaz/screens/create_code_screen.dart';
+//import 'package:cartaz/screens/creat_auto_codes.dart';
 import 'package:cartaz/screens/device_list_screen.dart';
 import 'package:cartaz/screens/paymentchoise.dart';
-// import 'package:cartaz/screens/read_code_screen.dart';
-import 'package:cartaz/screens/rules_screan.dart';
-import 'package:cartaz/screens/used_codes.dart';
+//import 'package:cartaz/screens/rules_screan.dart';
+//import 'package:cartaz/screens/used_codes.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -19,60 +17,136 @@ class NavegationScreen extends StatefulWidget {
 class _NavegationScreenState extends State<NavegationScreen> {
   int currentPageIndex = 0;
   bool preminUser = false;
-  final List<Widget> admin = [CreateAutoCodePage(), UsedCodesPage()];
+  String premiumExpiresAt = "";
+
   final List<Widget> pages = [
     DeviceListScreen(),
-    RulesPage(),
+    //RulesPage(),
     PaymentChoicePage(),
     AboutPage(),
   ];
+
   @override
   void initState() {
     super.initState();
     _loadUser();
   }
 
+  // ==================== VERIFICADOR PREMIUM ====================
   Future<void> _loadUser() async {
-    final preferedShere = await SharedPreferences.getInstance();
+    final prefs = await SharedPreferences.getInstance();
+
+    bool isPremium = prefs.getBool("isPremium") ?? false;
+    String expire = prefs.getString("premiumExpiresAt") ?? "";
+
+    // 🔥 VERIFICA SE EXPIROU
+    if (isPremium && expire.isNotEmpty) {
+      DateTime expireDate = DateTime.parse(expire);
+
+      if (DateTime.now().isAfter(expireDate)) {
+        // ❌ expirou → remove premium
+        await prefs.setBool("isPremium", false);
+
+        setState(() {
+          preminUser = false;
+          premiumExpiresAt = "";
+        });
+
+        return;
+      }
+    }
+
     setState(() {
-      preminUser = preferedShere.getBool("isPremiun") ?? false;
+      preminUser = isPremium;
+      premiumExpiresAt = expire;
     });
+  }
+
+  // ==================== FORMATAR DATA ====================
+  String formatDate(String date) {
+    if (date.isEmpty) return "";
+
+    DateTime d = DateTime.parse(date);
+    return "${d.day}/${d.month}/${d.year}";
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Profissional -G"),
+        elevation: 0,
+        backgroundColor: Colors.green,
+        title: const Text(
+          "Profissional G",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         actions: [
+          if (preminUser && premiumExpiresAt.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: Center(
+                child: Text(
+                  "Expira: ${formatDate(premiumExpiresAt)}",
+                  style: const TextStyle(fontSize: 12),
+                ),
+              ),
+            ),
+
+          // 🔥 BADGE MELHORADO
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            margin: const EdgeInsets.only(right: 16),
+            margin: const EdgeInsets.only(right: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: Colors.green,
-              borderRadius: BorderRadius.circular(12),
+              gradient: preminUser
+                  ? const LinearGradient(
+                      colors: [Colors.orange, Colors.deepOrange])
+                  : const LinearGradient(
+                      colors: [Colors.grey, Colors.black54]),
+              borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
-              !preminUser ? "Basico" : "Premiun",
-              style: TextStyle(color: Colors.white, fontSize: 10),
+              preminUser ? "PREMIUM" : "BÁSICO",
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ],
       ),
-      body: IndexedStack(index: currentPageIndex, children: pages),
+
+      // ==================== CONTEÚDO ====================
+      body: IndexedStack(
+        index: currentPageIndex,
+        children: pages,
+      ),
+
+      // ==================== NAVIGATION ====================
       bottomNavigationBar: NavigationBar(
+        height: 70,
+        selectedIndex: currentPageIndex,
         onDestinationSelected: (int index) {
           setState(() {
             currentPageIndex = index;
           });
         },
-        destinations: const <Widget>[
-          NavigationDestination(icon: Icon(Icons.home), label: "Exames"),
-          NavigationDestination(icon: Icon(Icons.rule), label: "regras"),
-          NavigationDestination(icon: Icon(Icons.pin), label: 'codigos'),
+        destinations: const [
           NavigationDestination(
-            icon: Icon(Icons.people_alt_sharp),
-            label: 'Sobre Nós',
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home),
+            label: "Exames",
+          ),
+          
+          NavigationDestination(
+            icon: Icon(Icons.payment_outlined),
+            selectedIcon: Icon(Icons.payment),
+            label: "Premium",
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.info_outline),
+            selectedIcon: Icon(Icons.info),
+            label: "Sobre",
           ),
         ],
       ),

@@ -20,16 +20,13 @@ class PaymentChoicePage extends StatelessWidget {
 
             const Text(
               "Escolha o método de pagamento",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
 
             const SizedBox(height: 10),
 
             const Text(
-              "Plano mensal - 250 MT",
+              "Plano mensal - 247 MT",
               style: TextStyle(color: Colors.grey),
             ),
 
@@ -44,9 +41,7 @@ class PaymentChoicePage extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) => const MpesaPaymentPage(),
-                  ),
+                  MaterialPageRoute(builder: (_) => const MpesaPaymentPage()),
                 );
               },
             ),
@@ -62,9 +57,7 @@ class PaymentChoicePage extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) => const UseCodePage(),
-                  ),
+                  MaterialPageRoute(builder: (_) => const UseCodePage()),
                 );
               },
             ),
@@ -132,15 +125,12 @@ class PaymentCard extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Text(
-                    subtitle,
-                    style: const TextStyle(color: Colors.grey),
-                  ),
+                  Text(subtitle, style: const TextStyle(color: Colors.grey)),
                 ],
               ),
             ),
 
-            const Icon(Icons.arrow_forward_ios, size: 18)
+            const Icon(Icons.arrow_forward_ios, size: 18),
           ],
         ),
       ),

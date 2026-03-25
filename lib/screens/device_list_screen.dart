@@ -92,7 +92,7 @@ class _DeviceListScreenState extends State<DeviceListScreen> {
       isNew: true,
     ),
   ];
-  bool isPremiun = false;
+  bool isPremium = false;
   @override
   void initState() {
     // TODO: implement initState
@@ -103,9 +103,9 @@ class _DeviceListScreenState extends State<DeviceListScreen> {
   Future<void> getUserStatus(Device device) async {
     final prefer = await SharedPreferences.getInstance();
     setState(() {
-      isPremiun = prefer.getBool("isPremiun") ?? false;
+      isPremium = prefer.getBool("isPremium") ?? false;
     });
-    if (isPremiun|| device.id==1) {
+    if (isPremium || device.id == 1) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => QuizScreen(device: device)),
