@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'screens/creat_auto_codes.dart';
 //import 'screens/device_list_screen.dart';
 
 Future <void>  main() async{
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
         ),
         home: NavegationScreen(),
+       // home: CreateAutoCodePage(),
       ),
     );
   }

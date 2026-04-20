@@ -166,7 +166,7 @@ class _UseCodePageState extends State<UseCodePage> {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Text(
-                "247 MT / mês",
+                "250 MT / mês",
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,

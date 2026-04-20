@@ -38,7 +38,7 @@ Future<void> createCode() async {
     'code': code,
     'available': true,
     'createdAt': FieldValue.serverTimestamp(),
-    'expiresAt': Timestamp.fromDate(expiresAt), // 👈 NOVO
+    'expiresAt': Timestamp.fromDate(expiresAt), // 👈 
   });
 
   setState(() {

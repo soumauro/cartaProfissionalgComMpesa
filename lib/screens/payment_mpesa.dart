@@ -4,7 +4,16 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MpesaPaymentPage extends StatefulWidget {
-  const MpesaPaymentPage({super.key});
+  final String planType;
+  final double amount;
+  final int durationDays;
+
+  const MpesaPaymentPage({
+    super.key,
+    required this.planType,
+    required this.amount,
+    required this.durationDays,
+  });
 
   @override
   State<MpesaPaymentPage> createState() => _MpesaPaymentPageState();
@@ -25,8 +34,8 @@ class _MpesaPaymentPageState extends State<MpesaPaymentPage> {
     super.dispose();
   }
 
-  // ==================== ADICIONAR 1 MÊS ====================
-  Future<void> addOneMonthToUser() async {
+  // ==================== ADICIONAR DIAS AO PREMIUM ====================
+  Future<void> addPremiumDays(int days) async {
     try {
       final prefs = await SharedPreferences.getInstance();
 
@@ -39,21 +48,20 @@ class _MpesaPaymentPageState extends State<MpesaPaymentPage> {
         DateTime currentExpire = DateTime.parse(savedDate);
 
         if (currentExpire.isAfter(now)) {
-          newDate = currentExpire.add(const Duration(days: 30));
+          newDate = currentExpire.add(Duration(days: days));
         } else {
-          newDate = now.add(const Duration(days: 30));
+          newDate = now.add(Duration(days: days));
         }
       } else {
-        newDate = now.add(const Duration(days: 30));
+        newDate = now.add(Duration(days: days));
       }
 
       await prefs.setBool("isPremium", true);
-      //await prefs.setBool("isPremium", true);
       await prefs.setString("premiumExpiresAt", newDate.toIso8601String());
-
-   //   print("Premium ativado até: $newDate");
+      
+      debugPrint("Premium ativado até: $newDate");
     } catch (e) {
-      throw ("Erro ao ativar premium: $e");
+      throw Exception("Erro ao ativar premium: $e");
     }
   }
 
@@ -62,8 +70,6 @@ class _MpesaPaymentPageState extends State<MpesaPaymentPage> {
     FocusScope.of(context).unfocus();
 
     String phone = controller.text.trim();
-
-    // Remove tudo que não for número
     phone = phone.replaceAll(RegExp(r'[^\d]'), '');
 
     // Validação
@@ -85,21 +91,29 @@ class _MpesaPaymentPageState extends State<MpesaPaymentPage> {
       final response = await http.post(
         Uri.parse(url),
         headers: {"Content-Type": "application/json"},
-        body: jsonEncode({"phoneNumber": "258$phone", "amount": 247}),
+        body: jsonEncode({
+          "phoneNumber": "258$phone", 
+          "amount": widget.amount.toInt()
+        }),
       );
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
+        await addPremiumDays(widget.durationDays);
 
-        // ✅ ATIVA PREMIUM
-        await addOneMonthToUser();
-
-        DateTime expire = DateTime.now().add(const Duration(days: 30));
+        DateTime expireDate = DateTime.now().add(Duration(days: widget.durationDays));
 
         setState(() {
-          message =
-              "✅ Pagamento realizado com sucesso!\n\nPremium ativo até ${expire.day}/${expire.month}/${expire.year} 🎉";
+          message = 
+              "✅ Pagamento realizado com sucesso!\n\n"
+              "Plano: ${widget.planType}\n"
+              "Valor: ${widget.amount.toStringAsFixed(0)} MT\n"
+              "Premium ativo até ${expireDate.day}/${expireDate.month}/${expireDate.year} 🎉";
           messageColor = Colors.green;
+        });
+
+        // Voltar após 3 segundos
+        Future.delayed(const Duration(seconds: 3), () {
+          Navigator.pop(context);
         });
       } else {
         setState(() {
@@ -109,7 +123,7 @@ class _MpesaPaymentPageState extends State<MpesaPaymentPage> {
       }
     } catch (e) {
       setState(() {
-        message = "⚠️ Erro de conexão";
+        message = "⚠️ Erro de conexão: $e";
         messageColor = Colors.orange;
       });
     }
@@ -124,12 +138,12 @@ class _MpesaPaymentPageState extends State<MpesaPaymentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Pagamento M-Pesa"),
+        title: Text("Pagamento M-Pesa - ${widget.planType}"),
         backgroundColor: Colors.green,
         foregroundColor: Colors.white,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
+      body: SingleChildScrollView(
+        ///padding: const EdgeInsets.all(20),
         child: Column(
           children: [
             const SizedBox(height: 20),
@@ -144,16 +158,47 @@ class _MpesaPaymentPageState extends State<MpesaPaymentPage> {
             Container(
               padding: const EdgeInsets.all(15),
               decoration: BoxDecoration(
-                color: Colors.green.shade50,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Text(
-                "247 MT / mês",
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.green,
+                gradient: LinearGradient(
+                  colors: [Colors.green.shade400, Colors.green.shade700],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.green.withOpacity(0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  )
+                ],
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    "${widget.planType}",
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    "${widget.amount.toStringAsFixed(0)} MT",
+                    style: const TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  Text(
+                    "${widget.durationDays} dias de acesso",
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.white.withOpacity(0.9),
+                    ),
+                  ),
+                ],
               ),
             ),
 
@@ -184,6 +229,9 @@ class _MpesaPaymentPageState extends State<MpesaPaymentPage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
                   padding: const EdgeInsets.symmetric(vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 child: loading
                     ? const CircularProgressIndicator(color: Colors.white)
@@ -206,6 +254,27 @@ class _MpesaPaymentPageState extends State<MpesaPaymentPage> {
                   textAlign: TextAlign.center,
                 ),
               ),
+
+        ///    const Spacer(),
+
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.info_outline, size: 14, color: Colors.grey),
+                  SizedBox(width: 5),
+                  Text(
+                    "Você receberá um pedido de pagamento no seu M-Pesa",
+                    style: TextStyle(fontSize: 11, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),

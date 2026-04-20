@@ -105,7 +105,7 @@ class _DeviceListScreenState extends State<DeviceListScreen> {
     setState(() {
       isPremium = prefer.getBool("isPremium") ?? false;
     });
-    if (isPremium || device.id == 1) {
+    if (isPremium || device.id == 0) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => QuizScreen(device: device)),
